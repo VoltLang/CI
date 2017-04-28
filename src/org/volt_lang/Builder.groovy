@@ -279,10 +279,9 @@ class Builder implements Serializable
 	{
 		dir = "${dir}/${arch}-${plat}"
 		dsl.dir(dir) {
-			dsl.deleteDir()
 			dsl.sh """
-			ln -s ../src
-			ln -s ../bin
+			rsync -r -v --checksum --delete ../src/ src
+			rsync -r -v --checksum --delete ../bin/ bin
 			bin/battery config \
 				--arch ${arch} \
 				--platform ${plat} \
