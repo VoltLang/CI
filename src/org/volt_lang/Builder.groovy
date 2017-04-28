@@ -101,6 +101,13 @@ class Builder implements Serializable
 	 *
 	 */
 
+	def checkoutAll()
+	{
+		dsl.node('master') {
+			dsl.parallel makeCheckout(null, null)
+		}
+	}
+
 	def checkoutSCM(folder, scm)
 	{
 		def conf = getOrAddScmRepoConf(folder)
@@ -130,13 +137,16 @@ class Builder implements Serializable
 	def makeCheckout(folder, scm)
 	{
 		def branches = [:]
-		def scmConf = getOrAddScmRepoConf(folder)
-		setTag(scmConf)
 
-		branches[folder] = {
-			dsl.dir(folder) {
-				dsl.checkout scm
-				dsl.stash includes: '**', name: scmConf.tag
+		if (folder != null) {
+			def conf = getOrAddScmRepoConf(folder)
+			setTag(conf)
+
+			branches[conf.folder] = {
+				dsl.dir(conf.folder) {
+					dsl.checkout scm
+					dsl.stash includes: '**', name: conf.tag
+				}
 			}
 		}
 
