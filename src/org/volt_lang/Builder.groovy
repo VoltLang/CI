@@ -353,7 +353,7 @@ class Builder implements Serializable
 
 		dsl.dir(dir) {
 			for (conf in repoConfs) {
-				if (conf.lib || conf.url == null) {
+				if (conf.lib) {
 					continue;
 				}
 
