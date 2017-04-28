@@ -11,16 +11,17 @@ class Builder implements Serializable
 
 	/// Configuration of repos.
 	def repoConfs = [
-		new RepoConf('amp',     'https://github.com/VoltLang/Amp',     true ),
-		new RepoConf('watt',    'https://github.com/VoltLang/Watt',    true ),
-		new RepoConf('tesla',   'https://github.com/VoltLang/Tesla',   false),
-		new RepoConf('volta',   'https://github.com/VoltLang/Volta',   false),
-		new RepoConf('diode',   'https://github.com/VoltLang/Diode',   false),
-		new RepoConf('charge',  'https://github.com/VoltLang/Charge',  false),
-		new RepoConf('parsec',  'https://github.com/VoltLang/Parsec',  true ),
-		new RepoConf('battery', 'https://github.com/VoltLang/Battery', false),
-		new RepoConf('fourier', 'https://github.com/VoltLang/Fourier', false),
-		new RepoConf('injiki',  'https://github.com/bhelyer/Injiki',   false),
+		new RepoConf('amp',      'https://github.com/VoltLang/Amp',        true ),
+		new RepoConf('watt',     'https://github.com/VoltLang/Watt',       true ),
+		new RepoConf('tesla',    'https://github.com/VoltLang/Tesla',      false),
+		new RepoConf('volta',    'https://github.com/VoltLang/Volta',      false),
+		new RepoConf('diode',    'https://github.com/VoltLang/Diode',      false),
+		new RepoConf('charge',   'https://github.com/VoltLang/Charge',     false),
+		new RepoConf('parsec',   'https://github.com/VoltLang/Parsec',     true ),
+		new RepoConf('battery',  'https://github.com/VoltLang/Battery',    false),
+		new RepoConf('fourier',  'https://github.com/VoltLang/Fourier',    false),
+		new RepoConf('injiki',   'https://github.com/bhelyer/Injiki',      false),
+		new RepoConf('quickhex', 'https://github.com/Wallbraker/QuickHex', false),
 	]
 
 	/// Which targets to build and on which nodes.
