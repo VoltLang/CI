@@ -37,8 +37,3 @@ def ask()
 	def ret = input message: q, ok: 'Ok', parameters: [string(defaultValue: '0.0.0', description: desc, name: 'Version')]
 	return ret
 }
-
-def mv(from, to)
-{
-	sh "mv ${from} ${to}"
-}
