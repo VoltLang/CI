@@ -20,7 +20,7 @@ class Builder implements Serializable
 		new RepoConf('parsec',  'https://github.com/VoltLang/Parsec',  true ),
 		new RepoConf('battery', 'https://github.com/VoltLang/Battery', false),
 		new RepoConf('fourier', 'https://github.com/VoltLang/Fourier', false),
-		new RepoConf('injiki',  'https://github.com/bhelyer/Injiki',   true ),
+		new RepoConf('injiki',  'https://github.com/bhelyer/Injiki',   false),
 	]
 
 	/// Which targets to build and on which nodes.
