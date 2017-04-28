@@ -259,6 +259,8 @@ class Builder implements Serializable
 			dsl.sh """
 			make -C src/volta volt
 			mv src/volta/volt bin/volta
+			strip bin/volta
+			strip bin/battery
 			"""
 		}
 	}
