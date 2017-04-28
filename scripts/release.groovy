@@ -5,11 +5,13 @@ node('master') {
 		'battery-x86-linux.tar.gz',
 		'battery-x86_64-linux.tar.gz',
 		'battery-x86_64-osx.tar.gz',
+		'battery-x86_64-msvc.zip',
 	]
 	def to = [
 		"battery-${tag}-x86-linux.tar.gz",
 		"battery-${tag}-x86_64-linux.tar.gz",
-		"battery-${tag}-x86_64-osx.tar.gz"
+		"battery-${tag}-x86_64-osx.tar.gz",
+		"battery-${tag}-x86_64-msvc.zip",
 	]
 
 	for (file in from) {
@@ -23,6 +25,7 @@ node('master') {
 	mv ${from[0]} ${to[0]}
 	mv ${from[1]} ${to[1]}
 	mv ${from[2]} ${to[2]}
+	mv ${from[3]} ${to[3]}
 	"""
 
 	for (file in to) {
