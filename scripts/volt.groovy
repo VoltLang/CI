@@ -161,7 +161,7 @@ def buildAll(name, arg)
 def testAll(name, arg)
 {
 	sh """
-	battery/battery test
+	bin/battery test
 	"""
 
 	junit 'results.xml'
