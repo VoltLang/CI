@@ -161,8 +161,8 @@ class Builder implements Serializable
 
 			branches[conf.folder] = {
 				dsl.dir(conf.folder) {
-					dsl.git poll: false, url: conf.url
-					dsl.stash includes: "**", name: conf.tag
+					dsl.git branch: 'master', changelog: true, poll: true, url: conf.url
+					dsl.stash includes: '**', name: conf.tag
 				}
 			}
 		}
