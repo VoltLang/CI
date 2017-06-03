@@ -52,12 +52,12 @@ class Builder implements Serializable
 
 	def replaceRepos(newConfs)
 	{
-		nodeConfs = newConfs
+		repoConfs = newConfs
 	}
 
 	def addRepos(newConfs)
 	{
-		nodeConfs += newConfs
+		repoConfs += newConfs
 	}
 
 	def doSort()
