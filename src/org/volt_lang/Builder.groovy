@@ -396,8 +396,8 @@ class Builder implements Serializable
 		}
 		dsl.sh """
 		rm -f sources.zip source.tar.gz
-		zip -r sources.zip ${args}
-		tar -czf sources.tar.gz ${args}
+		zip -r sources.zip ${args} -x "*/.git/*"
+		tar -czf sources.tar.gz --exclude="*/.git/*" ${args}
 		"""
 		dsl.archiveArtifacts artifacts: tarFile, fingerprint: true
 		dsl.archiveArtifacts artifacts: zipFile, fingerprint: true
