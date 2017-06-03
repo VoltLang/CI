@@ -50,6 +50,16 @@ class Builder implements Serializable
 		dsl.echo makeStr()
 	}
 
+	def replaceRepos(newConfs)
+	{
+		nodeConfs = newConfs
+	}
+
+	def addRepos(newConfs)
+	{
+		nodeConfs += newConfs
+	}
+
 	def doSort()
 	{
 		def sorted = []
