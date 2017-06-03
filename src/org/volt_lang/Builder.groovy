@@ -136,6 +136,10 @@ class Builder implements Serializable
 			new RepoConf('amp',  null, true),
 			new RepoConf('watt', null, true),
 		]
+
+		repoConfs[1].toolchain = true
+		repoConfs[2].toolchain = true
+		repoConfs[3].toolchain = true
 	}
 
 	def checkoutVoltaSCM(scm)
@@ -350,7 +354,7 @@ class Builder implements Serializable
 
 	def archive()
 	{
-		dispatch(this.&doArchive, true, null)
+		dispatchWithMaster(this.&doArchive, true, this.&doArchiveSources, null)
 	}
 
 	def doArchive(dir, arch, plat, arg)
@@ -379,6 +383,26 @@ class Builder implements Serializable
 		}
 	}
 
+	def doArchiveSources(dir, arch, plat, arg)
+	{
+		def zipFile = 'sources.zip'
+		def tarFile = 'sources.tar.gz'
+		def args = ""
+		for (conf in repoConfs) {
+			if (conf.toolchain) {
+				continue;
+			}
+			args = "${args} ${conf.folder}"
+		}
+		dsl.sh """
+		rm -f sources.zip source.tar.gz
+		zip -r sources.zip ${args}
+		tar -czf sources.tar.gz ${args}
+		"""
+		dsl.archiveArtifacts artifacts: tarFile, fingerprint: true
+		dsl.archiveArtifacts artifacts: zipFile, fingerprint: true
+	}
+
 
 	/*
 	 *
@@ -388,12 +412,26 @@ class Builder implements Serializable
 
 	def dispatch(func, cross, arg)
 	{
-		dsl.parallel makeDispatch(func, cross, arg)
+		dsl.parallel makeDispatch(func, cross, null, arg)
 	}
 
-	def makeDispatch(func, cross, arg)
+	def dispatchWithMaster(func, cross, funcMaster, arg)
+	{
+		dsl.parallel makeDispatch(func, cross, funcMaster, arg)
+	}
+
+	def makeDispatch(func, cross, funcMaster, arg)
 	{
 		def branches = [:]
+
+		if (funcMaster != null) {
+			branches['master'] = {
+				dsl.node('master') {
+					funcMaster(null, null, null, arg)
+				}
+			}
+		}
+
 		for (c in nodeConfs) {
 			def conf = c
 
