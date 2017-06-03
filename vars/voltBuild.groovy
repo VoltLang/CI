@@ -20,6 +20,9 @@ def call(folder) {
 	stage('Build') {
 		b.build()
 	}
+	stage('Test') {
+		b.test()
+	}
 	stage('Archive') {
 		b.archive()
 	}
