@@ -341,7 +341,10 @@ class Builder implements Serializable
 			bin/battery test
 			"""
 
-			dsl.junit 'results.xml'
+			// For now, improve battery instead.
+			if (dsl.fileExists('results.xml')) {
+				dsl.junit 'results.xml'
+			}
 		}
 	}
 
