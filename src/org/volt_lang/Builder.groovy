@@ -200,35 +200,29 @@ class Builder implements Serializable
 
 			setTag(conf)
 
-			if (conf.url == null) {
-				branches[conf.folder] = makeSCM(conf)
-			} else {
-				branches[conf.folder] = makeGIT(conf)
+			branches[conf.folder] = {
+				doCheckout(conf)
 			}
 		}
 
 		return branches
 	}
 
-	def makeSCM(conf)
+	def doCheckout(conf)
 	{
-		return {
+		if (conf.url == null) {
 			dsl.dir(conf.folder) {
 				dsl.checkout scm
 				dsl.stash includes: '**', name: conf.tag
 			}
-		}
-	}
-
-	def makeGIT(conf)
-	{
-		return {
+		} else {
 			dsl.dir(conf.folder) {
 				dsl.git branch: 'master', changelog: true, poll: true, url: conf.url
 				dsl.stash includes: '**', name: conf.tag
 			}
 		}
 	}
+
 
 	/*
 	 *
