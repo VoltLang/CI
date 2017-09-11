@@ -123,6 +123,15 @@ class Builder implements Serializable
 
 	def checkoutSCM(folder, scm)
 	{
+		repoConfs = [
+			new RepoConf('rt',   null, true),
+			new RepoConf('amp',  null, true),
+			new RepoConf('watt', null, true),
+		]
+		repoConfs[0].toolchain = true
+		repoConfs[1].toolchain = true
+		repoConfs[2].toolchain = true
+
 		def conf = getOrAddScmRepoConf(folder)
 		dsl.node('master') {
 			setTag(conf)
@@ -131,17 +140,6 @@ class Builder implements Serializable
 				dsl.stash includes: '**', name: conf.tag
 			}
 		}
-
-		repoConfs = [
-			conf,
-			new RepoConf('rt',   null, true),
-			new RepoConf('amp',  null, true),
-			new RepoConf('watt', null, true),
-		]
-
-		repoConfs[1].toolchain = true
-		repoConfs[2].toolchain = true
-		repoConfs[3].toolchain = true
 	}
 
 	def checkoutVoltaSCM(scm)
@@ -205,8 +203,8 @@ class Builder implements Serializable
 
 	def doPrepare(dir, arch, plat, arg)
 	{
-		doSources(dir, arch, plat, arg);
 		doToolchain(dir, arch, plat, arg);
+		doSources(dir, arch, plat, arg);
 	}
 
 	def doPrepareVolta(dir, arch, plat, arg)
@@ -231,13 +229,18 @@ class Builder implements Serializable
 		for (c in repoConfs) {
 			def conf = c
 
-			// If a repo doesn't have a tag skip it.
-			if (conf.tag == null) {
-				continue;
-			}
+			def dst = "${dir}/src/${conf.folder}"
+			def src = "${dir}/toolchain/lib/${conf.folder}"
 
-			dsl.dir("${dir}/src/${conf.folder}") {
-				dsl.unstash(conf.tag)
+			// Should we grab this repo from the toolchain or tag.
+			if (conf.toolchain) {
+				dsl.dir("${dir}/src") {
+					dsl.sh "mv ${src} ${dst}"
+				}
+			} else {
+				dsl.dir(dst) {
+					dsl.unstash(conf.tag)
+				}
 			}
 		}
 	}
@@ -252,16 +255,14 @@ class Builder implements Serializable
 	def doToolchain(dir, arch, plat, arg)
 	{
 		def file = "toolchain-${arch}-${plat}.tar.gz"
-		dsl.dir("${dir}/bin") {
-			dsl.deleteDir()
-		}
+
 		dsl.dir("${dir}/toolchain") {
 			dsl.deleteDir()
 			dsl.step([$class: 'CopyArtifact', filter: file, fingerprintArtifacts: true, projectName: 'Volt'])
 			dsl.sh """
 			tar xfv ${file}
 			rm ${file}
-			mv lib/* ../src
+			rm -rf ../bin
 			mv bin ..
 			"""
 		}
