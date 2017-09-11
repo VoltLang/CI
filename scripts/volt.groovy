@@ -9,11 +9,8 @@ stage('Setup') {
 stage('Checkout') {
 	b.checkoutAll()
 }
-stage('Distribute') {
-	b.source()
-}
-stage('Bootstrap') {
-	b.bootstrap()
+stage('Prepare') {
+	b.prepareVolta()
 }
 stage('Build') {
 	b.build()

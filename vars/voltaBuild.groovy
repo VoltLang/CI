@@ -11,11 +11,8 @@ def call() {
 	stage('Checkout') {
 		b.checkoutVoltaSCM(scm)
 	}
-	stage('Distribute') {
-		b.source()
-	}
-	stage('Bootstrap') {
-		b.bootstrap()
+	stage('Prepare') {
+		b.prepareVolta()
 	}
 	stage('Build') {
 		b.build()

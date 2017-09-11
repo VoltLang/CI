@@ -189,14 +189,38 @@ class Builder implements Serializable
 
 	/*
 	 *
-	 * Distrobute the source
+	 * Setting up for the build.
 	 *
 	 */
 
-	def source()
+	def prepare()
 	{
-		dispatch(this.&doSources, false, null)
+		dispatch(this.&doPrepare, false, null)
 	}
+
+	def prepareVolta()
+	{
+		dispatch(this.&doPrepareVolta, false, null)
+	}
+
+	def doPrepare(dir, arch, plat, arg)
+	{
+		doSources(dir, arch, plat, arg);
+		doToolchain(dir, arch, plat, arg);
+	}
+
+	def doPrepareVolta(dir, arch, plat, arg)
+	{
+		doSources(dir, arch, plat, arg);
+		doBootstrap(dir, arch, plat, arg);
+	}
+
+
+	/*
+	 *
+	 * Distrobute the source
+	 *
+	 */
 
 	def doSources(dir, arch, plat, arg)
 	{
@@ -225,11 +249,6 @@ class Builder implements Serializable
 	 *
 	 */
 
-	def toolchain()
-	{
-		dispatch(this.&doToolchain, false, null)
-	}
-
 	def doToolchain(dir, arch, plat, arg)
 	{
 		def file = "toolchain-${arch}-${plat}.tar.gz"
@@ -254,11 +273,6 @@ class Builder implements Serializable
 	 * Bootstrap
 	 *
 	 */
-
-	def bootstrap()
-	{
-		dispatch(this.&doBootstrap, false, null)
-	}
 
 	def doBootstrap(dir, arch, plat, arg)
 	{

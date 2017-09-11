@@ -11,11 +11,8 @@ def call(folder) {
 	stage('Checkout') {
 		b.checkoutSCM(folder, scm)
 	}
-	stage('Distribute') {
-		b.source()
-	}
-	stage('Toolchain') {
-		b.toolchain()
+	stage('Prepare') {
+		b.prepare()
 	}
 	stage('Build') {
 		b.build()
