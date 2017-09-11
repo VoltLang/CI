@@ -99,9 +99,11 @@ class Builder implements Serializable
 	{
 		def ret = "Target and node config:"
 		for (conf in nodeConfs) {
-			ret = "${ret}\ntarget: \'${conf.tag}\' node:"
-			ret = "${ret}\'${conf.node}\'\ndir:\'${conf.dir}\'"
+			ret = "${ret}\ntarget: \'${conf.tag}\'\n"
+			ret = "${ret}\tnode:\'${conf.node}\'\n"
+			ret = "${ret}\tdir:\'${conf.dir}\'\n"
 		}
+
 		return ret
 	}
 
