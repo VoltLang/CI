@@ -39,7 +39,7 @@ def doToolchain(root, arch, plat, arg)
 		sh """
 		mkdir -p bin
 		mkdir -p lib
-		mv ../${name}/volta bin
+		cp ../${name}/volta bin
 		mv ../bin/battery bin
 		mv ../src/volta/rt lib
 		mv ../src/watt lib
