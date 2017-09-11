@@ -53,18 +53,12 @@ class Builder implements Serializable
 
 	def setupExe(folder)
 	{
-		def conf = getOrAddScmRepoConf(folder)
-		if (scm != null) {
-			conf.url = null
-		}
+		doSetupProject(folder, false)
+	}
 
-		repoConfs = [conf]
-		addToolchainLib('rt')
-		addToolchainLib('amp')
-		addToolchainLib('watt')
-
-		dsl.parallel makeSetup()
-		dsl.echo makeStr()
+	def setupLib(folder)
+	{
+		doSetupProject(folder, true)
 	}
 
 	def setupVolta()
@@ -99,6 +93,23 @@ class Builder implements Serializable
 		def conf = new RepoConf(folder, null, true);
 		conf.toolchain = true
 		repoConfs.push(conf)
+	}
+
+	def doSetupProject(folder, lib)
+	{
+		def conf = getOrAddScmRepoConf(folder)
+		conf.lib = lib
+		if (scm != null) {
+			conf.url = null
+		}
+
+		repoConfs = [conf]
+		addToolchainLib('rt')
+		addToolchainLib('amp')
+		addToolchainLib('watt')
+
+		dsl.parallel makeSetup()
+		dsl.echo makeStr()
 	}
 
 	def doSort()
