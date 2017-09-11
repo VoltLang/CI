@@ -277,21 +277,19 @@ class Builder implements Serializable
 	def doBootstrap(dir, arch, plat, arg)
 	{
 		def file = "battery-${arch}-${plat}.tar.gz"
+		def volta = "${dir}/bin/volta"
+		def battery = "${dir}/bin/battery"
+
 		dsl.dir("${dir}/bin") {
-			dsl.deleteDir()
 			dsl.step([$class: 'CopyArtifact', filter: file, fingerprintArtifacts: true, projectName: 'Binaries'])
 			dsl.sh """
 			tar xfv ${file}
 			rm ${file}
-			"""
-		}
 
-		dsl.dir(dir) {
-			dsl.sh """
-			make -C src/volta volt
-			mv src/volta/volt bin/volta
-			strip bin/volta
-			strip bin/battery
+			make -C ../src/volta TARGET=${volta} ${volta}
+
+			strip ${volta}
+			strip ${battery}
 			"""
 		}
 	}
