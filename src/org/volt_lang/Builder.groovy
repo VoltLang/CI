@@ -9,6 +9,12 @@ class Builder implements Serializable
 	/// The dsl object that allows us to use steps.
 	def dsl
 
+	/// The scm object if any.
+	def scm
+
+	/// Are we doing a full build aka Volta
+	def isVolta
+
 	/// Configuration of repos.
 	def repoConfs = [
 		new RepoConf('amp',      'https://github.com/VoltLang/Amp',        true ),
@@ -32,9 +38,10 @@ class Builder implements Serializable
 		new NodeConf('x86_64', 'msvc',  true,  'ubuntu-16.04-x86_64'),
 	]
 
-	Builder(dsl)
+	Builder(dsl, scm)
 	{
 		this.dsl = dsl
+		this.scm = scm
 	}
 
 
@@ -44,20 +51,54 @@ class Builder implements Serializable
 	 *
 	 */
 
-	def setup()
+	def setupExe(folder)
 	{
+		def conf = getOrAddScmRepoConf(folder)
+		if (scm != null) {
+			conf.url = null
+		}
+
+		repoConfs = [conf]
+		addToolchainLib('rt')
+		addToolchainLib('amp')
+		addToolchainLib('watt')
+
 		dsl.parallel makeSetup()
 		dsl.echo makeStr()
 	}
 
-	def replaceRepos(newConfs)
+	def setupVolta()
 	{
-		repoConfs = newConfs
+		def conf = getOrAddScmRepoConf('volta')
+		if (scm != null) {
+			conf.url = null
+		}
+
+		isVolta = true
+
+		dsl.parallel makeSetup()
+		dsl.echo makeStr()
 	}
 
-	def addRepos(newConfs)
+	def setupGuru(newConfs)
 	{
-		repoConfs += newConfs
+		repoConfs = newConfs
+
+		dsl.parallel makeSetup()
+		dsl.echo makeStr()
+	}
+
+	def addToolchainLib(folder)
+	{
+		for (repo in repoConfs) {
+			if (repo.folder == folder) {
+				return;
+			}
+		}
+
+		def conf = new RepoConf(folder, null, true);
+		conf.toolchain = true
+		repoConfs.push(conf)
 	}
 
 	def doSort()
@@ -97,11 +138,26 @@ class Builder implements Serializable
 
 	def makeStr()
 	{
-		def ret = "Target and node config:"
+		def ret = "Target and node config:\n"
 		for (conf in nodeConfs) {
-			ret = "${ret}\ntarget: \'${conf.tag}\'\n"
-			ret = "${ret}\tnode:\'${conf.node}\'\n"
-			ret = "${ret}\tdir:\'${conf.dir}\'\n"
+			ret = "${ret}\ttarget: \'${conf.tag}\'\n"
+			ret = "${ret}\t\tnode: \'${conf.node}\'\n"
+			ret = "${ret}\t\tdir: \'${conf.dir}\'\n"
+		}
+
+		ret = "${ret}\nRepo configs:\n"
+		for (conf in repoConfs) {
+			ret = "${ret}\tfolder: \'${conf.folder}\'\n"
+
+			if (conf.url != null) {
+				ret = "${ret}\t\turl: \'${conf.url}\'\n"
+			} else if (conf.toolchain) {
+				ret = "${ret}\t\ttoolchain: \'true\'\n"
+			} else if (scm != null) {
+				ret = "${ret}\t\tscm: \'true\'\n"
+			} else {
+				ret = "${ret}\t\terror: \'true\'\n"
+			}
 		}
 
 		return ret
@@ -114,27 +170,38 @@ class Builder implements Serializable
 	 *
 	 */
 
-	def checkoutAll()
+	def checkout()
 	{
 		dsl.node('master') {
-			dsl.parallel makeCheckout(null, null)
+			dsl.parallel makeCheckout()
 		}
 	}
 
-	def checkoutSCM(folder, scm)
+	def makeCheckout()
 	{
-		repoConfs = [
-			new RepoConf('rt',   null, true),
-			new RepoConf('amp',  null, true),
-			new RepoConf('watt', null, true),
-		]
-		repoConfs[0].toolchain = true
-		repoConfs[1].toolchain = true
-		repoConfs[2].toolchain = true
+		def branches = [:]
 
-		def conf = getOrAddScmRepoConf(folder)
-		dsl.node('master') {
+		for (c in repoConfs) {
+			def conf = c
+			if (conf.toolchain) {
+				continue;
+			}
+
 			setTag(conf)
+
+			if (conf.url == null) {
+				branches[conf.folder] = makeSCM(conf)
+			} else {
+				branches[conf.folder] = makeGIT(conf)
+			}
+		}
+
+		return branches
+	}
+
+	def makeSCM(conf)
+	{
+		return {
 			dsl.dir(conf.folder) {
 				dsl.checkout scm
 				dsl.stash includes: '**', name: conf.tag
@@ -142,48 +209,15 @@ class Builder implements Serializable
 		}
 	}
 
-	def checkoutVoltaSCM(scm)
+	def makeGIT(conf)
 	{
-		dsl.node('master') {
-			dsl.parallel makeCheckout('volta', scm)
+		return {
+			dsl.dir(conf.folder) {
+				dsl.git branch: 'master', changelog: true, poll: true, url: conf.url
+				dsl.stash includes: '**', name: conf.tag
+			}
 		}
 	}
-
-	def makeCheckout(folder, scm)
-	{
-		def branches = [:]
-
-		if (folder != null) {
-			def conf = getOrAddScmRepoConf(folder)
-			setTag(conf)
-
-			branches[conf.folder] = {
-				dsl.dir(conf.folder) {
-					dsl.checkout scm
-					dsl.stash includes: '**', name: conf.tag
-				}
-			}
-		}
-
-		for (c in repoConfs) {
-			def conf = c
-			setTag(conf)
-
-			if (conf.folder == folder) {
-				continue;
-			}
-
-			branches[conf.folder] = {
-				dsl.dir(conf.folder) {
-					dsl.git branch: 'master', changelog: true, poll: true, url: conf.url
-					dsl.stash includes: '**', name: conf.tag
-				}
-			}
-		}
-
-		return branches
-	}
-
 
 	/*
 	 *
@@ -193,12 +227,11 @@ class Builder implements Serializable
 
 	def prepare()
 	{
-		dispatch(this.&doPrepare, false, null)
-	}
-
-	def prepareVolta()
-	{
-		dispatch(this.&doPrepareVolta, false, null)
+		if (isVolta) {
+			dispatch(this.&doPrepareVolta, false, null)
+		} else {
+			dispatch(this.&doPrepare, false, null)
+		}
 	}
 
 	def doPrepare(dir, arch, plat, arg)
@@ -469,6 +502,7 @@ class Builder implements Serializable
 	def setTag(conf)
 	{
 		conf.tag = "${conf.folder}-repo"
+		conf.toolchain = false
 	}
 
 	def getOrAddScmRepoConf(folder)

@@ -1,16 +1,16 @@
 @Library('volt-build')
 import org.volt_lang.Builder
 
-def b = new Builder(steps)
+def b = new Builder(steps, null)
 
 stage('Setup') {
-	b.setup()
+	b.setupVolta()
 }
 stage('Checkout') {
-	b.checkoutAll()
+	b.checkout()
 }
 stage('Prepare') {
-	b.prepareVolta()
+	b.prepare()
 }
 stage('Build') {
 	b.build()

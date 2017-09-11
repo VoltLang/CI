@@ -3,16 +3,16 @@ import org.volt_lang.Builder;
 
 
 def call() {
-	def b = new Builder(steps)
+	def b = new Builder(steps, scm)
 
 	stage('Setup') {
-		b.setup()
+		b.setupVolta()
 	}
 	stage('Checkout') {
-		b.checkoutVoltaSCM(scm)
+		b.checkout()
 	}
 	stage('Prepare') {
-		b.prepareVolta()
+		b.prepare()
 	}
 	stage('Build') {
 		b.build()

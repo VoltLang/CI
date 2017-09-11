@@ -2,18 +2,17 @@
 import org.volt_lang.Builder
 import org.volt_lang.RepoConf
 
-def b = new Builder(steps)
+def b = new Builder(steps, null)
 
 stage('Setup') {
-	b.setup()
-	b.replaceRepos([
+	b.setupGuru([
 		new RepoConf('guru', 'https://github.com/VoltLang/Guru', false),
 		new RepoConf('metal', 'https://github.com/VoltLang/Metal', false)
 	])
 }
 
 stage('Checkout') {
-	b.checkoutAll()
+	b.checkout()
 }
 
 stage('Toolchain') {

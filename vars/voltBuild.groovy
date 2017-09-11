@@ -3,13 +3,13 @@ import org.volt_lang.Builder
 
 
 def call(folder) {
-	def b = new Builder(steps)
+	def b = new Builder(steps, scm)
 
 	stage('Setup') {
-		b.setup()
+		b.setupExe(folder)
 	}
 	stage('Checkout') {
-		b.checkoutSCM(folder, scm)
+		b.checkout()
 	}
 	stage('Prepare') {
 		b.prepare()
