@@ -41,11 +41,9 @@ def doToolchain(root, arch, plat, arg)
 		mv ../src/volta/rt lib
 		mv ../src/watt lib
 		mv ../src/amp lib
-		mv ../src/parsec lib
 		rm -rf lib/rt/test
 		rm -rf lib/watt/test
 		rm -rf lib/amp/test
-		rm -rf lib/parsec/test
 		tar -czf ${tarFile} *
 		"""
 		archiveArtifacts artifacts: tarFile, fingerprint: true, onlyIfSuccessful: true

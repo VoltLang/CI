@@ -23,7 +23,6 @@ class Builder implements Serializable
 		new RepoConf('volta',    'https://github.com/VoltLang/Volta',      false),
 		new RepoConf('diode',    'https://github.com/VoltLang/Diode',      false),
 		new RepoConf('charge',   'https://github.com/VoltLang/Charge',     false),
-		new RepoConf('parsec',   'https://github.com/VoltLang/Parsec',     true ),
 		new RepoConf('battery',  'https://github.com/VoltLang/Battery',    false),
 		new RepoConf('fourier',  'https://github.com/VoltLang/Fourier',    false),
 		new RepoConf('injiki',   'https://github.com/bhelyer/Injiki',      false),
