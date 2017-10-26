@@ -42,7 +42,7 @@ def doToolchain(root, arch, plat, arg)
 		mv ../src/watt lib
 		mv ../src/amp lib
 		rm -rf lib/rt/test
-		rm -rf lib/watt/test
+		rm -rf `find lib/watt -type d -name test`
 		rm -rf lib/amp/test
 		tar -czf ${tarFile} *
 		"""
