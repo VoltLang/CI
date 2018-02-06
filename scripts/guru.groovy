@@ -27,11 +27,11 @@ stage('Toolchain') {
 			step([$class: 'CopyArtifact', filter: fileDiode, fingerprintArtifacts: true, projectName: 'Volt'])
 			step([$class: 'CopyArtifact', filter: fileSources, fingerprintArtifacts: true, projectName: 'Volt'])
 			sh """
-			tar xfv ${fileTool}
-			tar xfv ${fileDiode}
+			tar xf ${fileTool}
+			tar xf ${fileDiode}
 			strip diode
 			mv diode bin/diode
-			tar xfv ${fileSources}
+			tar xf ${fileSources}
 			rm ${fileTool} ${fileDiode} ${fileSources}
 			rm -rf lib
 			rsync -r -v --checksum --delete --exclude ".git" ../guru/ guru

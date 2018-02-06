@@ -297,7 +297,7 @@ class Builder implements Serializable
 			dsl.deleteDir()
 			dsl.step([$class: 'CopyArtifact', filter: file, fingerprintArtifacts: true, projectName: 'Volt'])
 			dsl.sh """
-			tar xfv ${file}
+			tar xf ${file}
 			rm ${file}
 			rm -rf ../bin
 			mv bin ..
@@ -321,7 +321,7 @@ class Builder implements Serializable
 		dsl.dir("${dir}/bin") {
 			dsl.step([$class: 'CopyArtifact', filter: file, fingerprintArtifacts: true, projectName: 'Binaries'])
 			dsl.sh """
-			tar xfv ${file}
+			tar xf ${file}
 			rm ${file}
 
 			make -C ../src/volta TARGET=${volta} ${volta}
