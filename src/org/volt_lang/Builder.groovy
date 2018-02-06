@@ -417,7 +417,7 @@ class Builder implements Serializable
 		dir = "${dir}/${arch}-${plat}"
 
 		// Use zip for msvc or tar for nix.
-		def cmd = plat == 'msvc' ? 'zip' : 'tar -czf'
+		def cmd = plat == 'msvc' ? 'zip -q' : 'tar -czf'
 		def sufix = plat == 'msvc' ? 'zip' : 'tar.gz'
 		def fileSuffix = plat == 'msvc' ? '.exe' : ''
 
@@ -451,7 +451,7 @@ class Builder implements Serializable
 		}
 		dsl.sh """
 		rm -f sources.zip source.tar.gz
-		zip -r sources.zip ${args} -x "*/.git/*"
+		zip -q -r sources.zip ${args} -x "*/.git/*"
 		tar -czf sources.tar.gz --exclude="*/.git/*" ${args}
 		"""
 		dsl.archiveArtifacts artifacts: tarFile, fingerprint: true
