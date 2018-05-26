@@ -2,6 +2,7 @@ package org.volt_lang
 
 import org.volt_lang.RepoConf
 import org.volt_lang.NodeConf
+import org.volt_lang.ToolchainConf
 
 
 class Builder implements Serializable
@@ -79,6 +80,11 @@ class Builder implements Serializable
 
 		dsl.parallel makeSetup()
 		dsl.echo makeStr()
+	}
+
+	def setupToolchain(Map config)
+	{
+		def conf = new ToolchainConf(config);
 	}
 
 	def addToolchainLib(folder)
