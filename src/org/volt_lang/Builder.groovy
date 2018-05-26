@@ -239,6 +239,18 @@ class Builder implements Serializable
 				dsl.checkout scm
 				dsl.stash includes: '**', name: repoConf.tag
 			}
+		} else if (repoConf.gitTag) {
+			dsl.dir(repoConf.name) {
+				dsl.checkout(
+					scm: [$class: 'GitSCM',
+						userRemoteConfigs: [[url: "${repoConf.url}"]],
+						branches: [[name: "refs/tags/${repoConf.gitTag}"]]
+						],
+					poll: false,
+					changelog: false,
+				)
+				dsl.stash includes: '**', name: repoConf.tag
+			}
 		} else {
 			dsl.dir(repoConf.name) {
 				dsl.git branch: 'master', changelog: true, poll: true, url: repoConf.url
