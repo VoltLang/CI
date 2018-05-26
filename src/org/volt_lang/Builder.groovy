@@ -86,8 +86,20 @@ class Builder implements Serializable
 		dsl.echo makeStr()
 	}
 
-	def setupToolchain(ToolchainConf conf)
+	def setupToolchain(ToolchainConf toolchainConf)
 	{
+		def watt = findRepoConf('watt')
+		def volta = findRepoConf('volta')
+		def battery = findRepoConf('battery')
+
+		watt.gitTag = toolchainConf.wattTag
+		volta.gitTag = toolchainConf.voltaTag
+		battery.gitTag = toolchainConf.batteryTag
+
+		this.repoConfs = [watt, volta, battery]
+
+		dsl.parallel makeSetup()
+		dsl.echo makeStr()
 	}
 
 	def addToolchainLib(folder)
@@ -176,6 +188,10 @@ class Builder implements Serializable
 				ret = "${ret}\t\tscm: \'true\'\n"
 			} else {
 				ret = "${ret}\t\terror: \'true\'\n"
+			}
+
+			if (repoConf.gitTag != null) {
+				ret = "${ret}\t\ttag: \'${repoConf.gitTag}\'\n"
 			}
 		}
 
@@ -531,5 +547,14 @@ class Builder implements Serializable
 		def repoConf = new RepoConf(name: folder)
 		repoConfs.push(repoConf)
 		return repoConf
+	}
+
+	def findRepoConf(String name)
+	{
+		for (repoConf in repoConfs) {
+			if (repoConf.name == name) {
+				return repoConf
+			}
+		}
 	}
 }
