@@ -21,16 +21,16 @@ class Builder implements Serializable
 
 	/// Configuration of repos.
 	def repoConfs = [
-		new RepoConf('amp',      'https://github.com/VoltLang/Amp',        true ),
-		new RepoConf('watt',     'https://github.com/VoltLang/Watt',       true ),
-		new RepoConf('tesla',    'https://github.com/VoltLang/Tesla',      false),
-		new RepoConf('volta',    'https://github.com/VoltLang/Volta',      false),
-		new RepoConf('diode',    'https://github.com/VoltLang/Diode',      false),
-		new RepoConf('charge',   'https://github.com/VoltLang/Charge',     false),
-		new RepoConf('battery',  'https://github.com/VoltLang/Battery',    false),
-		new RepoConf('fourier',  'https://github.com/VoltLang/Fourier',    false),
-		new RepoConf('injiki',   'https://github.com/bhelyer/Injiki',      false),
-		new RepoConf('quickhex', 'https://github.com/Wallbraker/QuickHex', false),
+		new RepoConf(name: 'amp',      url: 'https://github.com/VoltLang/Amp',        lib: true ),
+		new RepoConf(name: 'watt',     url: 'https://github.com/VoltLang/Watt',       lib: true ),
+		new RepoConf(name: 'tesla',    url: 'https://github.com/VoltLang/Tesla',      lib: false),
+		new RepoConf(name: 'volta',    url: 'https://github.com/VoltLang/Volta',      lib: false),
+		new RepoConf(name: 'diode',    url: 'https://github.com/VoltLang/Diode',      lib: false),
+		new RepoConf(name: 'charge',   url: 'https://github.com/VoltLang/Charge',     lib: false),
+		new RepoConf(name: 'battery',  url: 'https://github.com/VoltLang/Battery',    lib: false),
+		new RepoConf(name: 'fourier',  url: 'https://github.com/VoltLang/Fourier',    lib: false),
+		new RepoConf(name: 'injiki',   url: 'https://github.com/bhelyer/Injiki',      lib: false),
+		new RepoConf(name: 'quickhex', url: 'https://github.com/Wallbraker/QuickHex', lib: false),
 	]
 
 	/// Which targets to build and on which nodes.
@@ -92,26 +92,26 @@ class Builder implements Serializable
 
 	def addToolchainLib(folder)
 	{
-		for (repo in repoConfs) {
-			if (repo.folder == folder) {
+		for (repoConf in repoConfs) {
+			if (repoConf.name == folder) {
 				return;
 			}
 		}
 
-		def conf = new RepoConf(folder, null, true);
-		conf.toolchain = true
-		repoConfs.push(conf)
+		def repoConf = new RepoConf(name: folder, lib: true);
+		repoConf.toolchain = true
+		repoConfs.push(repoConf)
 	}
 
 	def doSetupProject(folder, lib)
 	{
-		def conf = getOrAddScmRepoConf(folder)
-		conf.lib = lib
+		def repoConf = getOrAddScmRepoConf(folder)
+		repoConf.lib = lib
 		if (scm != null) {
-			conf.url = null
+			repoConf.url = null
 		}
 
-		repoConfs = [conf]
+		repoConfs = [repoConf]
 		addToolchainLib('rt')
 		addToolchainLib('amp')
 		addToolchainLib('watt')
@@ -124,11 +124,11 @@ class Builder implements Serializable
 	{
 		def sorted = []
 		def unique = [:]
-		for (conf in nodeConfs) {
-			unique[conf.node] = []
+		for (nodeConf in nodeConfs) {
+			unique[nodeConf.node] = []
 		}
-		for (conf in nodeConfs) {
-			unique[conf.node].push(conf)
+		for (nodeConf in nodeConfs) {
+			unique[nodeConf.node].push(nodeConf)
 		}
 		for (e in unique) {
 			sorted.push(e.value)
@@ -146,8 +146,8 @@ class Builder implements Serializable
 			branches[node] = {
 				dsl.node(node) {
 					def d = dsl.pwd()
-					for (conf in arr) {
-						conf.dir = d
+					for (nodeConf in arr) {
+						nodeConf.dir = d
 					}
 				}
 			}
@@ -158,19 +158,19 @@ class Builder implements Serializable
 	def makeStr()
 	{
 		def ret = "Target and node config:\n"
-		for (conf in nodeConfs) {
-			ret = "${ret}\ttarget: \'${conf.tag}\'\n"
-			ret = "${ret}\t\tnode: \'${conf.node}\'\n"
-			ret = "${ret}\t\tdir: \'${conf.dir}\'\n"
+		for (nodeConf in nodeConfs) {
+			ret = "${ret}\ttarget: \'${nodeConf.tag}\'\n"
+			ret = "${ret}\t\tnode: \'${nodeConf.node}\'\n"
+			ret = "${ret}\t\tdir: \'${nodeConf.dir}\'\n"
 		}
 
 		ret = "${ret}\nRepo configs:\n"
-		for (conf in repoConfs) {
-			ret = "${ret}\tfolder: \'${conf.folder}\'\n"
+		for (repoConf in repoConfs) {
+			ret = "${ret}\tname: \'${repoConf.name}\'\n"
 
-			if (conf.url != null) {
-				ret = "${ret}\t\turl: \'${conf.url}\'\n"
-			} else if (conf.toolchain) {
+			if (repoConf.url != null) {
+				ret = "${ret}\t\turl: \'${repoConf.url}\'\n"
+			} else if (repoConf.toolchain) {
 				ret = "${ret}\t\ttoolchain: \'true\'\n"
 			} else if (scm != null) {
 				ret = "${ret}\t\tscm: \'true\'\n"
@@ -201,32 +201,32 @@ class Builder implements Serializable
 		def branches = [:]
 
 		for (c in repoConfs) {
-			def conf = c
-			if (conf.toolchain) {
+			def repoConf = c
+			if (repoConf.toolchain) {
 				continue;
 			}
 
-			setTag(conf)
+			setTag(repoConf)
 
-			branches[conf.folder] = {
-				doCheckout(conf)
+			branches[repoConf.name] = {
+				doCheckout(repoConf)
 			}
 		}
 
 		return branches
 	}
 
-	def doCheckout(conf)
+	def doCheckout(repoConf)
 	{
-		if (conf.url == null) {
-			dsl.dir(conf.folder) {
+		if (repoConf.url == null) {
+			dsl.dir(repoConf.name) {
 				dsl.checkout scm
-				dsl.stash includes: '**', name: conf.tag
+				dsl.stash includes: '**', name: repoConf.tag
 			}
 		} else {
-			dsl.dir(conf.folder) {
-				dsl.git branch: 'master', changelog: true, poll: true, url: conf.url
-				dsl.stash includes: '**', name: conf.tag
+			dsl.dir(repoConf.name) {
+				dsl.git branch: 'master', changelog: true, poll: true, url: repoConf.url
+				dsl.stash includes: '**', name: repoConf.tag
 			}
 		}
 	}
@@ -273,19 +273,19 @@ class Builder implements Serializable
 		}
 
 		for (c in repoConfs) {
-			def conf = c
+			def repoConf = c
 
-			def dst = "${dir}/src/${conf.folder}"
-			def src = "${dir}/toolchain/lib/${conf.folder}"
+			def dst = "${dir}/src/${repoConf.name}"
+			def src = "${dir}/toolchain/lib/${repoConf.name}"
 
 			// Should we grab this repo from the toolchain or tag.
-			if (conf.toolchain) {
+			if (repoConf.toolchain) {
 				dsl.dir("${dir}/src") {
 					dsl.sh "mv ${src} ${dst}"
 				}
 			} else {
 				dsl.dir(dst) {
-					dsl.unstash(conf.tag)
+					dsl.unstash(repoConf.tag)
 				}
 			}
 		}
@@ -373,10 +373,10 @@ class Builder implements Serializable
 	def makeConfigStr(prefix)
 	{
 		def ret = ""
-		for (conf in repoConfs) {
-			ret = "${ret} src/${conf.folder}"
-			if (!conf.lib) {
-				ret = "${ret} -o ${conf.folder}"
+		for (repoConf in repoConfs) {
+			ret = "${ret} src/${repoConf.name}"
+			if (!repoConf.lib) {
+				ret = "${ret} -o ${repoConf.name}"
 			}
 		}
 		return ret
@@ -431,13 +431,13 @@ class Builder implements Serializable
 		def fileSuffix = plat == 'msvc' ? '.exe' : ''
 
 		dsl.dir(dir) {
-			for (conf in repoConfs) {
-				if (conf.lib) {
+			for (repoConf in repoConfs) {
+				if (repoConf.lib) {
 					continue;
 				}
 
-				def srcFile = "${conf.folder}${fileSuffix}"
-				def tarFile = "${conf.folder}-${arch}-${plat}.${sufix}"
+				def srcFile = "${repoConf.name}${fileSuffix}"
+				def tarFile = "${repoConf.name}-${arch}-${plat}.${sufix}"
 				dsl.sh """
 				rm -f ${tarFile}
 				${cmd} ${tarFile} ${srcFile}
@@ -452,11 +452,11 @@ class Builder implements Serializable
 		def zipFile = 'sources.zip'
 		def tarFile = 'sources.tar.gz'
 		def args = ""
-		for (conf in repoConfs) {
-			if (conf.toolchain) {
+		for (repoConf in repoConfs) {
+			if (repoConf.toolchain) {
 				continue;
 			}
-			args = "${args} ${conf.folder}"
+			args = "${args} ${repoConf.name}"
 		}
 		dsl.sh """
 		rm -f sources.zip source.tar.gz
@@ -512,24 +512,24 @@ class Builder implements Serializable
 		return branches
 	}
 
-	def setTag(conf)
+	def setTag(repoConf)
 	{
-		conf.tag = "${conf.folder}-repo"
-		conf.toolchain = false
+		repoConf.tag = "${repoConf.name}-repo"
+		repoConf.toolchain = false
 	}
 
 	def getOrAddScmRepoConf(folder)
 	{
-		for (conf in repoConfs) {
-			if (conf.folder == folder) {
-				return conf
+		for (repoConf in repoConfs) {
+			if (repoConf.name == folder) {
+				return repoConf
 			}
 		}
 
 		dsl.echo "Make repo ${folder}"
 
-		def conf = new RepoConf(folder, null, false)
-		repoConfs.push(conf)
-		return conf
+		def repoConf = new RepoConf(name: folder)
+		repoConfs.push(repoConf)
+		return repoConf
 	}
 }
