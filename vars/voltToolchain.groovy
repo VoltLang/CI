@@ -6,10 +6,10 @@ def call(Map config) {
 
 	def b = new Builder(steps, scm, env)
 	def tc = new ToolchainConf(
-		volta: config.volta,
-		watt: config.watt,
-		battery: config.battery,
 		tag: env.TAG_NAME,
+		voltaTag: config.volta,
+		wattTag: config.watt,
+		batteryTag: config.battery,
 		)
 
 	stage('Setup') {
