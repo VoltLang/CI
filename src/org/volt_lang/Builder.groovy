@@ -86,9 +86,8 @@ class Builder implements Serializable
 		dsl.echo makeStr()
 	}
 
-	def setupToolchain(Map config)
+	def setupToolchain(ToolchainConf conf)
 	{
-		def conf = new ToolchainConf(config);
 	}
 
 	def addToolchainLib(folder)
