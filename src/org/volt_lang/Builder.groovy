@@ -13,6 +13,9 @@ class Builder implements Serializable
 	/// The scm object if any.
 	def scm
 
+	/// The environment
+	def env
+
 	/// Are we doing a full build aka Volta
 	def isVolta
 
@@ -38,10 +41,11 @@ class Builder implements Serializable
 		new NodeConf('x86_64', 'msvc',  true,  'ubuntu-16.04-x86_64'),
 	]
 
-	Builder(dsl, scm)
+	Builder(dsl, scm, env)
 	{
 		this.dsl = dsl
 		this.scm = scm
+		this.env = env
 	}
 
 

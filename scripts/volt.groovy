@@ -1,7 +1,7 @@
 @Library('volt-build')
 import org.volt_lang.Builder
 
-def b = new Builder(steps, null)
+def b = new Builder(steps, null, env)
 
 stage('Setup') {
 	b.setupVolta()
