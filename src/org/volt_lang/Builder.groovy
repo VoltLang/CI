@@ -22,16 +22,16 @@ class Builder implements Serializable
 
 	/// Configuration of repos.
 	def repoConfs = [
-		new RepoConf(name: 'amp',      lib: true,  url: 'https://github.com/VoltLang/Amp'       ),
-		new RepoConf(name: 'watt',     lib: true,  url: 'https://github.com/VoltLang/Watt'      ),
-		new RepoConf(name: 'tesla',    lib: false, url: 'https://github.com/VoltLang/Tesla'     ),
-		new RepoConf(name: 'volta',    lib: false, url: 'https://github.com/VoltLang/Volta'     ),
-		new RepoConf(name: 'diode',    lib: false, url: 'https://github.com/VoltLang/Diode'     ),
-		new RepoConf(name: 'charge',   lib: false, url: 'https://github.com/VoltLang/Charge'    ),
-		new RepoConf(name: 'battery',  lib: false, url: 'https://github.com/VoltLang/Battery'   ),
-		new RepoConf(name: 'fourier',  lib: false, url: 'https://github.com/VoltLang/Fourier'   ),
-		new RepoConf(name: 'injiki',   lib: false, url: 'https://github.com/bhelyer/Injiki'     ),
-		new RepoConf(name: 'quickhex', lib: false, url: 'https://github.com/Wallbraker/QuickHex'),
+		new RepoConf(name: 'amp',      lib: true,  gitUrl: 'https://github.com/VoltLang/Amp'       ),
+		new RepoConf(name: 'watt',     lib: true,  gitUrl: 'https://github.com/VoltLang/Watt'      ),
+		new RepoConf(name: 'tesla',    lib: false, gitUrl: 'https://github.com/VoltLang/Tesla'     ),
+		new RepoConf(name: 'volta',    lib: false, gitUrl: 'https://github.com/VoltLang/Volta'     ),
+		new RepoConf(name: 'diode',    lib: false, gitUrl: 'https://github.com/VoltLang/Diode'     ),
+		new RepoConf(name: 'charge',   lib: false, gitUrl: 'https://github.com/VoltLang/Charge'    ),
+		new RepoConf(name: 'battery',  lib: false, gitUrl: 'https://github.com/VoltLang/Battery'   ),
+		new RepoConf(name: 'fourier',  lib: false, gitUrl: 'https://github.com/VoltLang/Fourier'   ),
+		new RepoConf(name: 'injiki',   lib: false, gitUrl: 'https://github.com/bhelyer/Injiki'     ),
+		new RepoConf(name: 'quickhex', lib: false, gitUrl: 'https://github.com/Wallbraker/QuickHex'),
 	]
 
 	/// Which targets to build and on which nodes.
@@ -70,7 +70,7 @@ class Builder implements Serializable
 	{
 		def conf = getOrAddScmRepoConf('volta')
 		if (scm != null) {
-			conf.url = null
+			conf.gitUrl = null
 		}
 
 		isVolta = true
@@ -121,7 +121,7 @@ class Builder implements Serializable
 		def repoConf = getOrAddScmRepoConf(folder)
 		repoConf.lib = lib
 		if (scm != null) {
-			repoConf.url = null
+			repoConf.gitUrl = null
 		}
 
 		repoConfs = [repoConf]
@@ -182,8 +182,8 @@ class Builder implements Serializable
 		for (repoConf in repoConfs) {
 			ret = "${ret}\tname: \'${repoConf.name}\'\n"
 
-			if (repoConf.url != null) {
-				ret = "${ret}\t\turl: \'${repoConf.url}\'\n"
+			if (repoConf.gitUrl != null) {
+				ret = "${ret}\t\tgitUrl: \'${repoConf.gitUrl}\'\n"
 			} else if (repoConf.toolchain) {
 				ret = "${ret}\t\ttoolchain: \'true\'\n"
 			} else if (scm != null) {
@@ -236,27 +236,27 @@ class Builder implements Serializable
 
 	def doCheckout(repoConf)
 	{
-		if (repoConf.url == null) {
+		if (repoConf.gitUrl == null) {
 			dsl.dir(repoConf.name) {
 				dsl.checkout scm
-				dsl.stash includes: '**', name: repoConf.tag
+				dsl.stash includes: '**', name: repoConf.stashName
 			}
 		} else if (repoConf.gitTag) {
 			dsl.dir(repoConf.name) {
 				dsl.checkout(
 					scm: [$class: 'GitSCM',
-						userRemoteConfigs: [[url: "${repoConf.url}"]],
+						userRemoteConfigs: [[url: "${repoConf.gitUrl}"]],
 						branches: [[name: "refs/tags/${repoConf.gitTag}"]]
 						],
 					poll: false,
 					changelog: false,
 				)
-				dsl.stash includes: '**', name: repoConf.tag
+				dsl.stash includes: '**', name: repoConf.stashName
 			}
 		} else {
 			dsl.dir(repoConf.name) {
-				dsl.git branch: 'master', changelog: true, poll: true, url: repoConf.url
-				dsl.stash includes: '**', name: repoConf.tag
+				dsl.git branch: 'master', changelog: true, poll: true, gitUrl: repoConf.gitUrl
+				dsl.stash includes: '**', name: repoConf.stashName
 			}
 		}
 	}
@@ -315,7 +315,7 @@ class Builder implements Serializable
 				}
 			} else {
 				dsl.dir(dst) {
-					dsl.unstash(repoConf.tag)
+					dsl.unstash(repoConf.stashName)
 				}
 			}
 		}
@@ -550,7 +550,7 @@ class Builder implements Serializable
 
 	def setTag(repoConf)
 	{
-		repoConf.tag = "${repoConf.name}-repo"
+		repoConf.stashName = "${repoConf.name}-repo"
 		repoConf.toolchain = false
 	}
 
