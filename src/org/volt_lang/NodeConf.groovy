@@ -16,5 +16,5 @@ class NodeConf implements Serializable
 	def boolean cross
 
 	/// Filled by Builder.
-	def dir
+	def String dir
 }
