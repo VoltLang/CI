@@ -3,6 +3,7 @@ package org.volt_lang
 import org.volt_lang.RepoConf
 import org.volt_lang.NodeConf
 import org.volt_lang.ToolchainConf
+import static org.volt_lang.Helpers.*
 
 
 class Builder implements Serializable
@@ -13,10 +14,10 @@ class Builder implements Serializable
 	/// The scm object if any.
 	def scm
 
-	/// The environment
+	/// The environment.
 	def env
 
-	/// Are we doing a full build aka Volta
+	/// Are we doing a full build aka Volta.
 	def isVolta
 
 	/// Configuration of repos.
@@ -35,10 +36,10 @@ class Builder implements Serializable
 
 	/// Which targets to build and on which nodes.
 	def nodeConfs = [
-		new NodeConf('x86',    'linux', false, 'ubuntu-16.04-i386'  ),
-		new NodeConf('x86_64', 'linux', false, 'ubuntu-16.04-x86_64'),
-		new NodeConf('x86_64', 'osx',   false, 'macosx-10.11-x86_64'),
-		new NodeConf('x86_64', 'msvc',  true,  'ubuntu-16.04-x86_64'),
+		new NodeConf(arch: 'x86',    plat: 'linux', cross: false, node: 'ubuntu-16.04-i386'  ),
+		new NodeConf(arch: 'x86_64', plat: 'linux', cross: false, node: 'ubuntu-16.04-x86_64'),
+		new NodeConf(arch: 'x86_64', plat: 'osx',   cross: false, node: 'macosx-10.11-x86_64'),
+		new NodeConf(arch: 'x86_64', plat: 'msvc',  cross: true,  node: 'ubuntu-16.04-x86_64'),
 	]
 
 	Builder(dsl, scm, env)
@@ -171,9 +172,10 @@ class Builder implements Serializable
 	{
 		def ret = "Target and node config:\n"
 		for (nodeConf in nodeConfs) {
-			ret = "${ret}\ttarget: \'${nodeConf.tag}\'\n"
+			ret = "${ret}\ttarget: \'${nodeConf.arch}-${nodeConf.plat}\'\n"
 			ret = "${ret}\t\tnode: \'${nodeConf.node}\'\n"
 			ret = "${ret}\t\tdir: \'${nodeConf.dir}\'\n"
+			ret = "${ret}\t\tcross: \'${nodeConf.cross}\'\n"
 		}
 
 		ret = "${ret}\nRepo configs:\n"
@@ -524,19 +526,25 @@ class Builder implements Serializable
 			}
 		}
 
-		for (c in nodeConfs) {
-			def conf = c
-
-			if (conf.cross && !cross) {
+		for (nodeConf in nodeConfs) {
+			if (nodeConf.cross && !cross) {
 				continue;
 			}
 
-			branches[conf.tag] = {
-				dsl.node(conf.node) {
-					func(conf.dir, conf.arch, conf.plat, arg)
+			// Get the correct values in the delegate
+			def tripple = makeTripple(nodeConf)
+			def dir = nodeConf.dir
+			def node = nodeConf.node
+			def arch = nodeConf.arch
+			def plat = nodeConf.plat
+
+			branches[tripple] = {
+				dsl.node(node) {
+					func(dir, arch, plat, arg)
 				}
 			}
 		}
+
 		return branches
 	}
 

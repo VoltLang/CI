@@ -3,20 +3,18 @@ package org.volt_lang
 
 class NodeConf implements Serializable
 {
-	def tag
-	def node
-	def arch
-	def plat
-	def cross
+	/// Node name as used by Jenkins.
+	def String node
+
+	/// Arch that this node builds on.
+	def String arch
+
+	/// Platform that this node builds on.
+	def String plat
+
+	/// Is this config cross compiling.
+	def boolean cross
+
+	/// Filled by Builder.
 	def dir
-
-
-	NodeConf(arch, plat, cross, node)
-	{
-		this.tag = "${arch}-${plat}"
-		this.arch = arch
-		this.plat = plat
-		this.node = node
-		this.cross = cross
-	}
 }

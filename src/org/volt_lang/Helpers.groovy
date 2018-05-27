@@ -1,5 +1,8 @@
 package org.volt_lang
 
+import org.volt_lang.NodeConf
+
+
 
 static def String makeToolchainDir(String arch, String plat, String root)
 {
@@ -26,4 +29,9 @@ static def String makeToolchainPkg(String arch, String plat, String tag)
 	}
 
 	return file
+}
+
+static def String makeTripple(NodeConf nodeConf)
+{
+	return "${nodeConf.arch}-${nodeConf.plat}"
 }
