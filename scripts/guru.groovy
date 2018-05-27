@@ -6,7 +6,7 @@ def b = new Builder(steps, null, env)
 
 stage('Setup') {
 	b.setupGuru([
-		new RepoConf(name: 'guru', url: 'https://github.com/VoltLang/Guru'),
+		new RepoConf(name: 'guru',  url: 'https://github.com/VoltLang/Guru'),
 		new RepoConf(name: 'metal', url: 'https://github.com/VoltLang/Metal')
 	])
 }

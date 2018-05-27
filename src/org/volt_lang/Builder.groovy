@@ -22,16 +22,16 @@ class Builder implements Serializable
 
 	/// Configuration of repos.
 	def repoConfs = [
-		new RepoConf(name: 'amp',      url: 'https://github.com/VoltLang/Amp',        lib: true ),
-		new RepoConf(name: 'watt',     url: 'https://github.com/VoltLang/Watt',       lib: true ),
-		new RepoConf(name: 'tesla',    url: 'https://github.com/VoltLang/Tesla',      lib: false),
-		new RepoConf(name: 'volta',    url: 'https://github.com/VoltLang/Volta',      lib: false),
-		new RepoConf(name: 'diode',    url: 'https://github.com/VoltLang/Diode',      lib: false),
-		new RepoConf(name: 'charge',   url: 'https://github.com/VoltLang/Charge',     lib: false),
-		new RepoConf(name: 'battery',  url: 'https://github.com/VoltLang/Battery',    lib: false),
-		new RepoConf(name: 'fourier',  url: 'https://github.com/VoltLang/Fourier',    lib: false),
-		new RepoConf(name: 'injiki',   url: 'https://github.com/bhelyer/Injiki',      lib: false),
-		new RepoConf(name: 'quickhex', url: 'https://github.com/Wallbraker/QuickHex', lib: false),
+		new RepoConf(name: 'amp',      lib: true,  url: 'https://github.com/VoltLang/Amp'       ),
+		new RepoConf(name: 'watt',     lib: true,  url: 'https://github.com/VoltLang/Watt'      ),
+		new RepoConf(name: 'tesla',    lib: false, url: 'https://github.com/VoltLang/Tesla'     ),
+		new RepoConf(name: 'volta',    lib: false, url: 'https://github.com/VoltLang/Volta'     ),
+		new RepoConf(name: 'diode',    lib: false, url: 'https://github.com/VoltLang/Diode'     ),
+		new RepoConf(name: 'charge',   lib: false, url: 'https://github.com/VoltLang/Charge'    ),
+		new RepoConf(name: 'battery',  lib: false, url: 'https://github.com/VoltLang/Battery'   ),
+		new RepoConf(name: 'fourier',  lib: false, url: 'https://github.com/VoltLang/Fourier'   ),
+		new RepoConf(name: 'injiki',   lib: false, url: 'https://github.com/bhelyer/Injiki'     ),
+		new RepoConf(name: 'quickhex', lib: false, url: 'https://github.com/Wallbraker/QuickHex'),
 	]
 
 	/// Which targets to build and on which nodes.
