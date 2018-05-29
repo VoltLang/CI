@@ -255,7 +255,7 @@ class Builder implements Serializable
 			}
 		} else {
 			dsl.dir(repoConf.name) {
-				dsl.git branch: 'master', changelog: true, poll: true, gitUrl: repoConf.gitUrl
+				dsl.git branch: 'master', changelog: true, poll: true, url: repoConf.gitUrl
 				dsl.stash includes: '**', name: repoConf.stashName
 			}
 		}
