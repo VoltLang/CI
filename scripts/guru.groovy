@@ -7,7 +7,8 @@ def b = new Builder(steps, null, env)
 stage('Setup') {
 	b.setupGuru([
 		new RepoConf(name: 'guru',  gitUrl: 'https://github.com/VoltLang/Guru'),
-		new RepoConf(name: 'metal', gitUrl: 'https://github.com/VoltLang/Metal')
+		new RepoConf(name: 'metal', gitUrl: 'https://github.com/VoltLang/Metal'),
+		new RepoConf(name: 'deqp', gitUrl: 'https://github.com/Wallbraker/dEQP'),
 	])
 }
 
@@ -36,6 +37,7 @@ stage('Toolchain') {
 			rm -rf lib
 			rsync -r -v --checksum --delete --exclude ".git" ../guru/ guru
 			rsync -r -v --checksum --delete --exclude ".git" ../metal/ metal
+			rsync -r -v --checksum --delete --exclude ".git" ../deqp/ deqp
 			"""
 		}
 	}
